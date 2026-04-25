@@ -1,4 +1,5 @@
 """Groq LLM agent para generación de emails personalizados Valoria."""
+
 import json
 from groq import Groq
 from email_template import render_html, load_image_b64
@@ -35,12 +36,12 @@ CTA_MAP = {
 
 
 def _build_user_prompt(row: dict, producto: str) -> str:
-    return f"""Cliente: {row['nombre']}
-Segmento: {row['segmento']}
-Ciudad: {row['ciudad']}
-Último producto comprado: {row['ultimo_producto']}
-Días sin compra: {row['dias_sin_compra']}
-Monto histórico total: ${row['monto_total_historico']:.0f}
+    return f"""Cliente: {row["nombre"]}
+Segmento: {row["segmento"]}
+Ciudad: {row["ciudad"]}
+Último producto comprado: {row["ultimo_producto"]}
+Días sin compra: {row["dias_sin_compra"]}
+Monto histórico total: ${row["monto_total_historico"]:.0f}
 Producto a promover en este email: {producto}
 
 Genera el email personalizado para este cliente."""

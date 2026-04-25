@@ -19,13 +19,16 @@ def load_image_b64(producto: str) -> str | None:
     """Carga imagen del producto como base64. Retorna None si no existe."""
     import base64
     import pathlib
+
     path = pathlib.Path(PRODUCT_IMAGES.get(producto, ""))
     if path.exists():
         return base64.b64encode(path.read_bytes()).decode("utf-8")
     return None
 
 
-def render_html(body_text: str, cta_text: str, cta_url: str, segmento: str, img_b64: str | None) -> str:
+def render_html(
+    body_text: str, cta_text: str, cta_url: str, segmento: str, img_b64: str | None
+) -> str:
     """Renderiza email HTML con branding Valoria.
 
     Args:
@@ -43,7 +46,8 @@ def render_html(body_text: str, cta_text: str, cta_url: str, segmento: str, img_
     img_section = (
         f'<img src="data:image/jpeg;base64,{img_b64}" '
         f'style="width:100%;max-height:280px;object-fit:cover;display:block;" alt="Producto Valoria">'
-        if img_b64 else ""
+        if img_b64
+        else ""
     )
 
     return f"""<!DOCTYPE html>

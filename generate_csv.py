@@ -1,4 +1,5 @@
 """Script one-shot para generar CSV de clientes sintéticos de Valoria."""
+
 import polars as pl
 import random
 
@@ -48,25 +49,68 @@ SEGMENTOS = {
 }
 
 NOMBRES = [
-    "María González", "Juan Pérez", "Catalina López", "Andrés Martínez",
-    "Valentina Rodríguez", "Diego Sánchez", "Sofía Fernández", "Matías Torres",
-    "Isidora Ramírez", "Felipe Vargas", "Camila Morales", "Sebastián Jiménez",
-    "Antonia Castro", "Nicolás Reyes", "Amanda Flores", "Rodrigo Díaz",
-    "Fernanda Herrera", "Benjamín Medina", "Constanza Rojas", "Ignacio Vega",
-    "Daniela Muñoz", "Cristóbal Pizarro", "Paula Gutiérrez", "Tomás Aguilera",
-    "Javiera Riquelme", "Alexis Fuentes", "Renata Molina", "Vicente Bravo",
-    "Pilar Campos", "Gabriel Espinoza", "Magdalena Cruz", "Emilio Navarro",
-    "Francisca Ríos", "Alonso Ortiz", "Trinidad Cárdenas", "Simón Araya",
-    "Valentina Soto", "Marcelo Contreras", "Rocío Peña", "Esteban Jara",
-    "Martina Leal", "Pablo Cerda", "Carla Ibáñez", "Lucas Tapia",
-    "Agustina Vergara", "Eduardo Ponce", "Lorena Valenzuela", "Maximiliano Fuentealba",
-    "Ximena Cuevas", "Ricardo Paredes",
+    "María González",
+    "Juan Pérez",
+    "Catalina López",
+    "Andrés Martínez",
+    "Valentina Rodríguez",
+    "Diego Sánchez",
+    "Sofía Fernández",
+    "Matías Torres",
+    "Isidora Ramírez",
+    "Felipe Vargas",
+    "Camila Morales",
+    "Sebastián Jiménez",
+    "Antonia Castro",
+    "Nicolás Reyes",
+    "Amanda Flores",
+    "Rodrigo Díaz",
+    "Fernanda Herrera",
+    "Benjamín Medina",
+    "Constanza Rojas",
+    "Ignacio Vega",
+    "Daniela Muñoz",
+    "Cristóbal Pizarro",
+    "Paula Gutiérrez",
+    "Tomás Aguilera",
+    "Javiera Riquelme",
+    "Alexis Fuentes",
+    "Renata Molina",
+    "Vicente Bravo",
+    "Pilar Campos",
+    "Gabriel Espinoza",
+    "Magdalena Cruz",
+    "Emilio Navarro",
+    "Francisca Ríos",
+    "Alonso Ortiz",
+    "Trinidad Cárdenas",
+    "Simón Araya",
+    "Valentina Soto",
+    "Marcelo Contreras",
+    "Rocío Peña",
+    "Esteban Jara",
+    "Martina Leal",
+    "Pablo Cerda",
+    "Carla Ibáñez",
+    "Lucas Tapia",
+    "Agustina Vergara",
+    "Eduardo Ponce",
+    "Lorena Valenzuela",
+    "Maximiliano Fuentealba",
+    "Ximena Cuevas",
+    "Ricardo Paredes",
 ]
 
 
 def generate_email_address(nombre: str, idx: int) -> str:
     first = nombre.split()[0].lower()
-    first = first.replace("á","a").replace("é","e").replace("í","i").replace("ó","o").replace("ú","u")
+    first = (
+        first.replace("á", "a")
+        .replace("é", "e")
+        .replace("í", "i")
+        .replace("ó", "o")
+        .replace("ú", "u")
+    )
     return f"{first}.{idx:03d}@ejemplo.cl"
 
 
@@ -81,19 +125,21 @@ def build_rows() -> list[dict]:
             rfm = random.choice(cfg["rfm"])
             monto = round(random.uniform(*cfg["montos"]), 2)
             dias = random.randint(*cfg["dias_sin_compra"])
-            rows.append({
-                "cliente_id": f"CLI{idx:04d}",
-                "nombre": nombre,
-                "email": generate_email_address(nombre, idx),
-                "segmento": segmento,
-                "rfm_recencia": rfm[0],
-                "rfm_frecuencia": rfm[1],
-                "rfm_monto": rfm[2],
-                "ultimo_producto": random.choice(cfg["productos"]),
-                "monto_total_historico": monto,
-                "dias_sin_compra": dias,
-                "ciudad": random.choice(cfg["ciudades"]),
-            })
+            rows.append(
+                {
+                    "cliente_id": f"CLI{idx:04d}",
+                    "nombre": nombre,
+                    "email": generate_email_address(nombre, idx),
+                    "segmento": segmento,
+                    "rfm_recencia": rfm[0],
+                    "rfm_frecuencia": rfm[1],
+                    "rfm_monto": rfm[2],
+                    "ultimo_producto": random.choice(cfg["productos"]),
+                    "monto_total_historico": monto,
+                    "dias_sin_compra": dias,
+                    "ciudad": random.choice(cfg["ciudades"]),
+                }
+            )
             idx += 1
 
     return rows

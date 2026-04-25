@@ -1,4 +1,5 @@
 """Script one-shot: genera imágenes de productos Valoria con Pollinations.ai."""
+
 import urllib.request
 import urllib.parse
 import pathlib

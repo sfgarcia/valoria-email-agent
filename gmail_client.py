@@ -1,4 +1,5 @@
 """Gmail API client para creación de borradores."""
+
 import base64
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -51,8 +52,13 @@ def create_draft(service: object, to: str, subject: str, body_html: str) -> dict
         Dict con 'id' del draft creado.
     """
     message = build_gmail_message(to, subject, body_html)
-    draft = service.users().drafts().create(
-        userId="me",
-        body={"message": message},
-    ).execute()
+    draft = (
+        service.users()
+        .drafts()
+        .create(
+            userId="me",
+            body={"message": message},
+        )
+        .execute()
+    )
     return draft

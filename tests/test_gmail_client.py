@@ -1,9 +1,11 @@
 # tests/test_gmail_client.py
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 from gmail_client import create_draft, build_gmail_message
+
 
 def test_build_gmail_message_encodes_correctly():
     import base64
+
     msg_bytes = build_gmail_message(
         to="test@example.com",
         subject="Test Subject",
@@ -13,6 +15,7 @@ def test_build_gmail_message_encodes_correctly():
     decoded = base64.urlsafe_b64decode(msg_bytes["raw"] + "==")
     assert b"test@example.com" in decoded
     assert b"Test Subject" in decoded
+
 
 def test_create_draft_calls_gmail_api():
     mock_service = MagicMock()

@@ -1,6 +1,7 @@
 # tests/test_email_template.py
 from email_template import render_html
 
+
 def test_render_html_contains_body_text():
     html = render_html(
         body_text="Hola María, te escribimos desde Valoria.",
@@ -13,6 +14,7 @@ def test_render_html_contains_body_text():
     assert "Descubrir Ahora" in html
     assert "https://valoria.com/eco-trek" in html
 
+
 def test_render_html_is_valid_html():
     html = render_html(
         body_text="Texto de prueba.",
@@ -24,6 +26,7 @@ def test_render_html_is_valid_html():
     assert html.startswith("<!DOCTYPE html>")
     assert "</html>" in html
 
+
 def test_render_html_includes_valoria_branding():
     html = render_html(
         body_text="Mensaje.",
@@ -34,6 +37,7 @@ def test_render_html_includes_valoria_branding():
     )
     assert "VALORIA" in html
     assert "Sostenible por diseño" in html
+
 
 def test_render_html_embeds_image_when_provided():
     fake_b64 = "iVBORw0KGgoAAAANS"

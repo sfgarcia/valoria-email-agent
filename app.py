@@ -1,4 +1,5 @@
 """Valoria Email Agent — Streamlit App."""
+
 import polars as pl
 import streamlit as st
 
@@ -53,7 +54,9 @@ def step2_generate():
     total = len(df)
 
     for i, row in enumerate(df.iter_rows(named=True)):
-        progress.progress((i + 1) / total, text=f"Generando email para {row['nombre']}...")
+        progress.progress(
+            (i + 1) / total, text=f"Generando email para {row['nombre']}..."
+        )
         email = generate_email(row, producto, api_key)
         emails.append(email)
 
@@ -70,18 +73,27 @@ def step3_preview():
     for e in emails:
         emails_por_segmento.setdefault(e["segmento"], []).append(e)
 
-    tabs = st.tabs([f"{s} ({len(emails_por_segmento.get(s, []))})" for s in SEGMENTO_ORDEN if s in emails_por_segmento])
+    tabs = st.tabs(
+        [
+            f"{s} ({len(emails_por_segmento.get(s, []))})"
+            for s in SEGMENTO_ORDEN
+            if s in emails_por_segmento
+        ]
+    )
 
     segmentos_con_data = [s for s in SEGMENTO_ORDEN if s in emails_por_segmento]
     for tab, segmento in zip(tabs, segmentos_con_data):
         with tab:
             for idx, email in enumerate(emails_por_segmento[segmento]):
-                with st.expander(f"📧 {email['nombre']} — {email['subject']}", expanded=(idx == 0)):
+                with st.expander(
+                    f"📧 {email['nombre']} — {email['subject']}", expanded=(idx == 0)
+                ):
                     email["subject"] = st.text_input(
-                        "Asunto", value=email["subject"],
-                        key=f"sub_{segmento}_{idx}"
+                        "Asunto", value=email["subject"], key=f"sub_{segmento}_{idx}"
                     )
-                    st.components.v1.html(email["body_html"], height=400, scrolling=True)
+                    st.components.v1.html(
+                        email["body_html"], height=400, scrolling=True
+                    )
 
     col1, col2 = st.columns(2)
     with col1:
@@ -103,6 +115,7 @@ def step4_gmail():
 
     st.subheader("Resumen por segmento")
     from collections import Counter
+
     counts = Counter(e["segmento"] for e in emails)
     for seg in SEGMENTO_ORDEN:
         if seg in counts:
@@ -122,7 +135,9 @@ def step4_gmail():
             errores = []
             for i, email in enumerate(emails):
                 try:
-                    create_draft(service, email["to"], email["subject"], email["body_html"])
+                    create_draft(
+                        service, email["to"], email["subject"], email["body_html"]
+                    )
                 except Exception as e:
                     errores.append(f"{email['nombre']}: {e}")
                 progress.progress((i + 1) / len(emails))
@@ -130,7 +145,9 @@ def step4_gmail():
             if errores:
                 st.error(f"{len(errores)} errores:\n" + "\n".join(errores))
             else:
-                st.success(f"✅ {len(emails)} borradores creados exitosamente en Gmail.")
+                st.success(
+                    f"✅ {len(emails)} borradores creados exitosamente en Gmail."
+                )
                 st.balloons()
                 st.markdown("[Ir a Gmail →](https://mail.google.com/mail/u/0/#drafts)")
 
