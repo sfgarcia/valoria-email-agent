@@ -4,7 +4,6 @@ import polars as pl
 import streamlit as st
 
 from agent import generate_email
-from gmail_client import create_draft, get_gmail_service
 
 PRODUCTOS = {
     "Chaqueta Eco-Trek ($295)": "Chaqueta Eco-Trek",
@@ -21,7 +20,6 @@ def init_session():
         "df": None,
         "producto": None,
         "emails_generados": [],
-        "gmail_service": None,
     }
     for k, v in defaults.items():
         if k not in st.session_state:
@@ -107,13 +105,12 @@ def step3_preview():
             st.rerun()
 
 
-def step4_gmail():
-    st.header("📧 Paso 4 — Crear Borradores en Gmail")
+def step4_download():
+    st.header("📦 Paso 4 — Descargar HTMLs")
 
     emails = st.session_state.emails_generados
-    st.info(f"Se crearán **{len(emails)} borradores** en tu Gmail.")
+    st.info(f"**{len(emails)} emails** listos para descargar y enviar manualmente.")
 
-    st.subheader("Resumen por segmento")
     from collections import Counter
 
     counts = Counter(e["segmento"] for e in emails)
@@ -121,39 +118,25 @@ def step4_gmail():
         if seg in counts:
             st.write(f"- **{seg}**: {counts[seg]} emails")
 
-    if st.session_state.gmail_service is None:
-        st.warning("Necesitas autorizar acceso a Gmail.")
-        if st.button("🔐 Conectar con Gmail"):
-            creds = st.secrets["google_oauth"]
-            service = get_gmail_service(creds["client_id"], creds["client_secret"])
-            st.session_state.gmail_service = service
-            st.rerun()
-    else:
-        if st.button("📬 Crear todos los borradores", type="primary"):
-            service = st.session_state.gmail_service
-            progress = st.progress(0)
-            errores = []
-            for i, email in enumerate(emails):
-                try:
-                    create_draft(
-                        service, email["to"], email["subject"], email["body_html"]
-                    )
-                except Exception as e:
-                    errores.append(f"{email['nombre']}: {e}")
-                progress.progress((i + 1) / len(emails))
+    buf = io.BytesIO()
+    with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as zf:
+        for email in emails:
+            nombre_safe = email["nombre"].replace(" ", "_")
+            filename = f"{email['segmento']}/{nombre_safe}.html"
+            zf.writestr(filename, email["body_html"])
+    buf.seek(0)
 
-            if errores:
-                st.error(f"{len(errores)} errores:\n" + "\n".join(errores))
-            else:
-                st.success(
-                    f"✅ {len(emails)} borradores creados exitosamente en Gmail."
-                )
-                st.balloons()
-                st.markdown("[Ir a Gmail →](https://mail.google.com/mail/u/0/#drafts)")
+    st.download_button(
+        label="⬇️ Descargar ZIP con todos los HTMLs",
+        data=buf,
+        file_name="valoria_emails.zip",
+        mime="application/zip",
+        type="primary",
+    )
 
-        if st.button("← Volver al Preview"):
-            st.session_state.step = 3
-            st.rerun()
+    if st.button("← Volver al Preview"):
+        st.session_state.step = 3
+        st.rerun()
 
 
 def main():
@@ -168,7 +151,7 @@ def main():
     init_session()
 
     step = st.session_state.step
-    steps_label = ["1. Configurar", "2. Generar", "3. Preview", "4. Gmail"]
+    steps_label = ["1. Configurar", "2. Generar", "3. Preview", "4. Descargar"]
     st.progress((step - 1) / 3, text=f"Paso {step} de 4 — {steps_label[step - 1]}")
     st.divider()
 
@@ -179,7 +162,7 @@ def main():
     elif step == 3:
         step3_preview()
     elif step == 4:
-        step4_gmail()
+        step4_download()
 
 
 if __name__ == "__main__":
