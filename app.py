@@ -112,6 +112,8 @@ def step4_download():
     st.info(f"**{len(emails)} emails** listos para descargar y enviar manualmente.")
 
     from collections import Counter
+    import io
+    import zipfile
 
     counts = Counter(e["segmento"] for e in emails)
     for seg in SEGMENTO_ORDEN:
