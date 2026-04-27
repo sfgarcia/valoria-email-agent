@@ -9,9 +9,9 @@ CTA_COLORS = {
 }
 
 PRODUCT_IMAGES = {
-    "Chaqueta Eco-Trek": "images/eco-trek.jpg",
-    "Mochila Urban Flow": "images/urban-flow.jpg",
-    "Kit Lumina Restore": "images/lumina-restore.jpg",
+    "Chaqueta Eco-Trek": "images/eco-trek.png",
+    "Mochila Urban Flow": "images/urban-flow.png",
+    "Kit Lumina Restore": "images/lumina-restore.png",
 }
 
 
@@ -44,7 +44,7 @@ def render_html(
     cta_color = CTA_COLORS.get(segmento, "#7c3aed")
     body_html = body_text.replace("\n", "<br>")
     img_section = (
-        f'<img src="data:image/jpeg;base64,{img_b64}" '
+        f'<img src="data:image/png;base64,{img_b64}" '
         f'style="width:100%;max-height:280px;object-fit:cover;display:block;" alt="Producto Valoria">'
         if img_b64
         else ""
